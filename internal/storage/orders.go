@@ -2,6 +2,7 @@ package storage
 
 import (
 	"ISIT/internal/models"
+	"errors"
 	"gorm.io/gorm"
 )
 
@@ -25,13 +26,18 @@ func (r *OrdersRepo) Create(order *models.Order) (uint, error) {
 	return order.ID, nil
 }
 
-// GetByID получает заказ по его ID.
-func (r *OrdersRepo) GetByID(id uint) (*models.Order, error) {
-	var order models.Order
-	if err := r.db.Preload("User").Preload("Car").First(&order, id).Error; err != nil {
+// GetByUserID получает все заказы по ID пользователя.
+func (r *OrdersRepo) GetByUserID(userID uint) ([]models.Order, error) {
+	var orders []models.Order
+
+	if err := r.db.Where("user_id = ?", userID).Find(&orders).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []models.Order{}, nil
+		}
 		return nil, err
 	}
-	return &order, nil
+
+	return orders, nil
 }
 
 // GetAll получает список всех заказов.

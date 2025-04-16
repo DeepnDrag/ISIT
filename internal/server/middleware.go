@@ -74,6 +74,8 @@ func (m *Middleware) AccessLog() echo.MiddlewareFunc {
 			// Устанавливаем email в контекст с ключом "email"
 			c.Set("email", claims.Email)
 			slog.Info("DEBUG: Email установлен в контекст", claims.Email)
+			c.Set("userID", claims.UserID)
+			slog.Info("DEBUG: UserID установлен в контекст", claims.UserID)
 
 			// Передаем управление следующему обработчику
 			handlerErr := next(c)

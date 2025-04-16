@@ -138,7 +138,7 @@ async function addCar() {
     }
 
     try {
-        const response = await fetch("/api/car/add", {
+        const response = await fetch("/api/cars/add", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,

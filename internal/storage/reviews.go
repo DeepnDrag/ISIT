@@ -25,15 +25,6 @@ func (r *ReviewsRepo) Create(review *models.Review) (uint, error) {
 	return review.ID, nil
 }
 
-// GetByID получает отзыв по его ID.
-func (r *ReviewsRepo) GetByID(id uint) (*models.Review, error) {
-	var review models.Review
-	if err := r.db.Preload("User").Preload("Car").First(&review, id).Error; err != nil {
-		return nil, err
-	}
-	return &review, nil
-}
-
 // GetAll получает список всех отзывов.
 func (r *ReviewsRepo) GetAll() ([]models.Review, error) {
 	var reviews []models.Review

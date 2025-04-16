@@ -44,7 +44,7 @@ type CarsRepository interface {
 // OrdersRepository определяет методы для работы с заказами.
 type OrdersRepository interface {
 	Create(order *models.Order) (uint, error)
-	GetByID(id uint) (*models.Order, error)
+	GetByUserID(userID uint) ([]models.Order, error)
 	GetAll() ([]models.Order, error)
 	Update(order *models.Order) error
 	Delete(id uint) error
@@ -67,7 +67,6 @@ type LocationsRepository interface {
 // ReviewsRepository определяет методы для работы с отзывами.
 type ReviewsRepository interface {
 	Create(review *models.Review) (uint, error)
-	GetByID(id uint) (*models.Review, error)
 	GetAll() ([]models.Review, error)
 	Update(review *models.Review) error
 	Delete(id uint) error
