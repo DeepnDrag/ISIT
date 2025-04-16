@@ -1,0 +1,416 @@
+/* Обнуление стилей */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Базовые стили для body */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    text-align: center;
+}
+
+/* Стили header */
+header,
+.header {
+    background: #333;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-size: 26px;
+    font-weight: bold;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Контейнеры */
+.container {
+    max-width: 1200px;
+    padding: 20px;
+    margin: auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-page {
+    max-width: 600px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Стили кнопок */
+button,
+.cta-button,
+.search button,
+.profile-actions button {
+    display: block; /* Каждая кнопка будет занимать всю ширину */
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px; /* Расстояние между кнопками */
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+button:hover,
+.cta-button:hover,
+.search button:hover,
+.profile-actions button:hover {
+    background-color: #0056b3;
+}
+
+/* Стили для формы входа */
+.login-form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-form h2 {
+    margin-bottom: 20px;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Стили для модального окна */
+.modal {
+    display: none; /* По умолчанию скрыто */
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Полупрозрачный фон */
+    z-index: 999; /* Чтобы окно было поверх всего */
+    overflow-y: auto; /* Добавляем вертикальную прокрутку */
+}
+
+.modal-content {
+    background: white;
+    margin: 5% auto; /* Отступ сверху и центрирование */
+    padding: 20px;
+    width: 90%; /* Адаптивная ширина */
+    max-width: 500px; /* Максимальная ширина */
+    border-radius: 15px; /* Закругленные углы */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Тень для объема */
+    text-align: center;
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out; /* Плавное появление */
+    max-height: 80vh; /* Ограничиваем максимальную высоту */
+    overflow-y: auto; /* Добавляем вертикальную прокрутку */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Кнопка закрытия */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: #333; /* Изменение цвета при наведении */
+}
+
+/* Заголовок модального окна */
+.modal-content h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Форма внутри модального окна */
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Расстояние между элементами */
+}
+
+.modal-form label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    text-align: left;
+    width: 100%;
+}
+
+.modal-form input,
+.modal-form select,
+.modal-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.modal-form input:focus,
+.modal-form select:focus,
+.modal-form textarea:focus {
+    border-color: #007bff; /* Подсветка при фокусе */
+    outline: none;
+}
+
+/* Кнопка отправки формы */
+.modal-form button {
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal-form button:hover {
+    background-color: #0056b3;
+}
+
+/* Сообщение об ошибке */
+.modal-error {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+    display: none; /* По умолчанию скрыто */
+}
+
+/* Стили для поиска */
+.search {
+    background: #fff;
+    padding: 10px;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: space-between;
+}
+
+.search select,
+.search input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 1rem;
+}
+
+.rent {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    line-height: 70px;
+}
+
+.rent :last-child {
+    margin-left: 400px;
+}
+
+/* Стили для списка автомобилей */
+.car-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.car-item {
+    background: #fff;
+    padding: 15px;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.car-item:hover {
+    transform: scale(1.05);
+}
+
+.car-item img {
+    width: 100%;
+    border-radius: 15px;
+}
+
+/* Стили для ссылок */
+a {
+    text-decoration: none;
+    color: black;
+}
+
+a:link,
+a:visited {
+    color: black;
+}
+
+/* Стили для иконки профиля */
+.profile-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.profile-icon:hover {
+    background-color: #e0e0e0;
+}
+
+.profile-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: #333333;
+}
+
+/* Стили для групп полей ввода */
+.form-group {
+    display: flex;
+    flex-direction: column; /* Метка и поле ввода друг под другом */
+    margin-bottom: 15px; /* Расстояние между группами */
+    width: 100%;
+}
+
+.form-group label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px; /* Расстояние между меткой и полем ввода */
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #007bff; /* Подсветка при фокусе */
+    outline: none;
+}
+
+.car-image {
+    width: 100%;
+    height: auto;
+    max-width: 200px;
+    margin-bottom: 10px;
+}
+
+/* Стили для заголовка страницы */
+#car-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center; /* Выравнивание по центру */
+}
+
+/* Стили для изображения автомобиля */
+#car-image {
+    width: 100%;
+    max-width: 600px; /* Ограничение ширины изображения */
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 20px auto; /* Центрирование */
+    display: block; /* Убедитесь, что изображение является блочным элементом */
+}
+
+/* Стили для контейнера с информацией о автомобиле */
+#car-info {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: left; /* Выравнивание текста по левому краю */
+}
+
+/* Стили для строк информации */
+#car-info p {
+    font-size: 16px;
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+/* Стили для жирного текста */
+#car-info strong {
+    color: #007bff; /* Цвет для акцентов */
+}
+
+/* Стили для кнопки "Назад" */
+.back-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+}
+
+/* Стили для ошибок (если автомобиль не найден) */
+.error-message {
+    color: red;
+    font-size: 18px;
+    margin-top: 20px;
+    text-align: center;
+    display: none; /* По умолчанию скрыто */
+}
+

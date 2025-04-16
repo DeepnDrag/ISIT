@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный Кабинет</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+<header class="header">
+    <div class="profile-icon" onclick="window.location.href='/'" aria-label="Вернуться на главную">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#000000">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </div>
+</header>
+
+<main class="profile-page">
+    <section class="profile-actions">
+        <button class="action-button" id="editProfile">Редактировать профиль</button>
+        <div id="adminActions"></div>
+        <button class="action-button" id="goToSearch">Перейти к поиску машин</button>
+    </section>
+
+    <section class="profile-info">
+        <h2>Информация о пользователе</h2>
+        <ul>
+            <li><strong>Email:</strong> <span id="email">Загрузка...</span></li>
+            <li><strong>Имя:</strong> <span id="firstName">Загрузка...</span></li>
+            <li><strong>Фамилия:</strong> <span id="lastName">Загрузка...</span></li>
+            <li><strong>Телефон:</strong> <span id="phoneNumber">Загрузка...</span></li>
+            <li><strong>Роль:</strong> <span id="role">Загрузка...</span></li>
+            <li><strong>Дата регистрации:</strong> <span id="createdAt">Загрузка...</span></li>
+            <li><strong>Дата обновления:</strong> <span id="updatedAt">Загрузка...</span></li>
+        </ul>
+    </section>
+</main>
+
+<div id="errorMessage" class="error-message" style="display: none;">Ошибка загрузки данных профиля</div>
+
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <h2>Редактировать профиль</h2>
+        <form id="editProfileForm">
+            <div class="form-group">
+                <label for="editFirstName">Имя:</label>
+                <input type="text" id="editFirstName" required>
+            </div>
+            <div class="form-group">
+                <label for="editLastName">Фамилия:</label>
+                <input type="text" id="editLastName" required>
+            </div>
+            <div class="form-group">
+                <label for="editPhone">Телефон:</label>
+                <input type="text" id="editPhone">
+            </div>
+            <button type="button" class="action-button" id="saveProfile">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+<div id="addCarModal" class="modal">
+    <div class="modal-content">
+        <!-- Кнопка закрытия модального окна -->
+        <span id="closeCarModal" class="close" aria-label="Закрыть">&times;</span>
+
+        <!-- Заголовок формы -->
+        <h2>Добавить машину</h2>
+
+        <!-- Форма для добавления автомобиля -->
+        <form id="addCarForm" enctype="multipart/form-data">
+            <!-- Марка автомобиля -->
+            <div class="form-group">
+                <label for="carMake">Марка:</label>
+                <input type="text" id="carMake" name="carMake" required placeholder="Введите марку автомобиля">
+            </div>
+
+            <!-- Модель автомобиля -->
+            <div class="form-group">
+                <label for="carModel">Модель:</label>
+                <input type="text" id="carModel" name="carModel" required placeholder="Введите модель автомобиля">
+            </div>
+
+            <!-- Год выпуска -->
+            <div class="form-group">
+                <label for="carYear">Год выпуска:</label>
+                <input type="number" id="carYear" name="carYear" required min="1900" max="2099" placeholder="Введите год выпуска">
+            </div>
+
+            <!-- Цвет автомобиля -->
+            <div class="form-group">
+                <label for="carColor">Цвет:</label>
+                <input type="text" id="carColor" name="carColor" required placeholder="Введите цвет автомобиля">
+            </div>
+
+            <!-- Пробег -->
+            <div class="form-group">
+                <label for="carMileage">Пробег (км):</label>
+                <input type="number" id="carMileage" name="carMileage" required min="0" placeholder="Введите пробег">
+            </div>
+
+            <!-- Цена за день -->
+            <div class="form-group">
+                <label for="carPrice">Цена за день (₽):</label>
+                <input type="number" step="0.01" id="carPrice" name="carPrice" required min="0" placeholder="Введите цену за день">
+            </div>
+
+            <!-- Статус автомобиля -->
+            <div class="form-group">
+                <label for="carStatus">Статус:</label>
+                <select id="carStatus" name="carStatus" required>
+                    <option value="available">Доступен</option>
+                    <option value="rented">Арендован</option>
+                    <option value="maintenance">На ремонте</option>
+                </select>
+            </div>
+
+            <!-- Локация -->
+            <div class="form-group">
+                <label for="carLocation">Локация (ID):</label>
+                <input type="number" id="carLocation" name="carLocation" required min="1" placeholder="Введите ID локации">
+            </div>
+
+            <!-- Загрузка изображения -->
+            <div class="form-group">
+                <label for="carImage">Фото автомобиля:</label>
+                <input type="file" id="carImage" name="carImage" accept="image/*" required>
+            </div>
+
+            <!-- Кнопка сохранения -->
+            <button type="button" id="saveCar" class="action-button">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+<script src="/static/scripts/profile.js"></script>
+</body>
+</html>

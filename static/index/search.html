@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аренда авто</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+
+<body>
+<header class="header">
+    <h1>Система аренды автомобилей</h1>
+    <div class="profile-icon" onclick="window.location.href='/profile.html'">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#000000">
+            <path
+                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+        </svg>
+    </div>
+</header>
+
+<main class="container">
+    <!-- Форма фильтрации автомобилей -->
+    <section class="search">
+        <h2>Фильтр автомобилей</h2>
+        <select id="filterBrand">
+            <option value="">Марка</option>
+        </select>
+        <select id="filterModel">
+            <option value="">Модель</option>
+        </select>
+        <select id="filterYearFrom">
+            <option value="">Год от</option>
+        </select>
+        <select id="filterYearTo">
+            <option value="">Год до</option>
+        </select>
+        <input type="number" id="filterMinPrice" placeholder="Мин. цена">
+        <input type="number" id="filterMaxPrice" placeholder="Макс. цена">
+        <div class="rent">
+            <label for="startDate">Дата начала аренды:</label>
+            <input type="date" id="startDate">
+            <label for="endDate">Дата окончания аренды:</label>
+            <input type="date" id="endDate">
+            <button class="action-button" id="searchButton">Поиск</button>        </div>
+    </section>
+
+    <!-- Список автомобилей -->
+    <section class="car-list" id="carList">
+        <!-- Автомобили будут добавляться сюда динамически -->
+    </section>
+</main>
+
+<script src="/static/scripts/search.js"></script>
+</body>
+
+</html>

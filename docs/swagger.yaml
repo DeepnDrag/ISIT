@@ -1,0 +1,683 @@
+definitions:
+  models.Baggage:
+    properties:
+      id:
+        type: integer
+      ticketID:
+        type: integer
+      type:
+        type: string
+      weight:
+        type: number
+    type: object
+  models.Flight:
+    properties:
+      airline:
+        type: string
+      arrivalAirport:
+        type: string
+      arrivalTime:
+        type: string
+      departureAirport:
+        type: string
+      departureTime:
+        type: string
+      flightNumber:
+        type: string
+      id:
+        type: integer
+    type: object
+  models.Passenger:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: integer
+      lastName:
+        type: string
+      phone:
+        type: string
+    type: object
+  models.Ticket:
+    properties:
+      flightID:
+        type: integer
+      id:
+        type: integer
+      passengerID:
+        type: integer
+      price:
+        type: number
+      seatNumber:
+        type: string
+      status:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /baggage:
+    get:
+      description: Получает список всех багажных мест
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Baggage'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Список багажа
+      tags:
+      - baggage
+    post:
+      consumes:
+      - application/json
+      description: Создает новый багаж
+      parameters:
+      - description: Данные багажа
+        in: body
+        name: baggage
+        required: true
+        schema:
+          $ref: '#/definitions/models.Baggage'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать багаж
+      tags:
+      - baggage
+  /baggage/{id}:
+    delete:
+      description: Удаляет багаж по его ID
+      parameters:
+      - description: ID багажа
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить багаж
+      tags:
+      - baggage
+    get:
+      description: Возвращает данные о багаже по его ID
+      parameters:
+      - description: ID багажа
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Baggage'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить багаж
+      tags:
+      - baggage
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию о багаже по его ID
+      parameters:
+      - description: ID багажа
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Обновленные данные багажа
+        in: body
+        name: baggage
+        required: true
+        schema:
+          $ref: '#/definitions/models.Baggage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Baggage'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить багаж
+      tags:
+      - baggage
+  /flights:
+    get:
+      description: Возвращает список всех доступных рейсов
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Flight'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить список рейсов
+      tags:
+      - flights
+    post:
+      consumes:
+      - application/json
+      description: Добавляет новый рейс в систему
+      parameters:
+      - description: Данные рейса
+        in: body
+        name: flight
+        required: true
+        schema:
+          $ref: '#/definitions/models.Flight'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать рейс
+      tags:
+      - flights
+  /flights/{id}:
+    delete:
+      description: Удаляет рейс по указанному ID
+      parameters:
+      - description: ID рейса
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить рейс
+      tags:
+      - flights
+    get:
+      description: Получает данные о рейсе по указанному ID
+      parameters:
+      - description: ID рейса
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Flight'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить рейс
+      tags:
+      - flights
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные о рейсе по указанному ID
+      parameters:
+      - description: ID рейса
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Обновленные данные рейса
+        in: body
+        name: flight
+        required: true
+        schema:
+          $ref: '#/definitions/models.Flight'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Flight'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить рейс
+      tags:
+      - flights
+  /passengers:
+    get:
+      description: Возвращает всех зарегистрированных пассажиров
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Passenger'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить список пассажиров
+      tags:
+      - passengers
+    post:
+      consumes:
+      - application/json
+      description: Добавляет нового пассажира в систему
+      parameters:
+      - description: Данные пассажира
+        in: body
+        name: passenger
+        required: true
+        schema:
+          $ref: '#/definitions/models.Passenger'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать пассажира
+      tags:
+      - passengers
+  /passengers/{id}:
+    delete:
+      description: Удаляет пассажира по ID
+      parameters:
+      - description: ID пассажира
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить пассажира
+      tags:
+      - passengers
+    get:
+      description: Возвращает информацию о пассажире по его ID
+      parameters:
+      - description: ID пассажира
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Passenger'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить пассажира
+      tags:
+      - passengers
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию о пассажире по ID
+      parameters:
+      - description: ID пассажира
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Обновленные данные пассажира
+        in: body
+        name: passenger
+        required: true
+        schema:
+          $ref: '#/definitions/models.Passenger'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Passenger'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить пассажира
+      tags:
+      - passengers
+  /tickets:
+    get:
+      description: Возвращает список всех доступных билетов
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Ticket'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить список билетов
+      tags:
+      - tickets
+    post:
+      consumes:
+      - application/json
+      description: Добавляет новый билет в систему
+      parameters:
+      - description: Данные билета
+        in: body
+        name: ticket
+        required: true
+        schema:
+          $ref: '#/definitions/models.Ticket'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать билет
+      tags:
+      - tickets
+  /tickets/{id}:
+    delete:
+      description: Удаляет билет по указанному ID
+      parameters:
+      - description: ID билета
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить билет
+      tags:
+      - tickets
+    get:
+      description: Получает данные о билете по указанному ID
+      parameters:
+      - description: ID билета
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Ticket'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить билет
+      tags:
+      - tickets
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные о билете по указанному ID
+      parameters:
+      - description: ID билета
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Обновленные данные билета
+        in: body
+        name: ticket
+        required: true
+        schema:
+          $ref: '#/definitions/models.Ticket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Ticket'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить билет
+      tags:
+      - tickets
+swagger: "2.0"
