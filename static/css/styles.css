@@ -103,13 +103,19 @@ button:hover,
 .modal {
     display: none; /* По умолчанию скрыто */
     position: fixed;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Полупрозрачный фон */
-    z-index: 999; /* Чтобы окно было поверх всего */
+    background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+    z-index: 1000; /* Чтобы окно было поверх всего */
     overflow-y: auto; /* Добавляем вертикальную прокрутку */
+    justify-content: center; /* Центрирование по горизонтали */
+    align-items: center; /* Центрирование по вертикали */
+}
+
+.modal.active {
+    display: flex; /* Показываем модальное окно при активации */
 }
 
 .modal-content {
@@ -292,20 +298,29 @@ a:visited {
     justify-content: center;
     width: 40px;
     height: 40px;
-    border-radius: 50%;
-    background-color: #f0f0f0;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    border-radius: 50%; /* Круглая форма */
+    background-color: #f0f0f0; /* Светлый фон */
+    cursor: pointer; /* Указатель курсора */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Плавные переходы */
+
+    /* Позиционирование в правом верхнем углу */
+    position: fixed; /* Фиксированное положение относительно окна браузера */
+    top: 20px; /* Отступ сверху */
+    right: 20px; /* Отступ справа */
 }
 
 .profile-icon:hover {
-    background-color: #e0e0e0;
+    background-color: #d0d0d0; /* Эффект при наведении */
+}
+
+.profile-icon:active {
+    transform: scale(0.95); /* Небольшое уменьшение при нажатии */
 }
 
 .profile-icon svg {
     width: 24px;
     height: 24px;
-    fill: #333333;
+    fill: #333333; /* Цвет иконки */
 }
 
 /* Стили для групп полей ввода */
@@ -412,5 +427,186 @@ a:visited {
     margin-top: 20px;
     text-align: center;
     display: none; /* По умолчанию скрыто */
+}
+
+#carDetails {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.car-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Стили для кнопки "Оформить заказ" */
+.rent-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.rent-button:hover {
+    background-color: #0056b3;
+}
+
+/* Стили для формы */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="date"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.confirm-rent-button {
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.confirm-rent-button:hover {
+    background-color: #218838;
+}
+
+/* Стили для контейнера */
+#app {
+    max-width: 600px; /* Ограничиваем максимальную ширину контейнера */
+    margin: 0 auto; /* Центрируем контейнер по горизонтали */
+    padding: 20px; /* Добавляем внутренние отступы */
+    border: 1px solid #ccc; /* Легкая граница */
+    border-radius: 8px; /* Закругленные углы */
+    background-color: #f9f9f9; /* Фоновый цвет */
+}
+
+/* Стили для кнопки */
+.rent-button {
+    display: inline-block; /* Кнопка не занимает всю ширину */
+    width: auto; /* Ширина кнопки зависит от её содержимого */
+    padding: 10px 20px; /* Внутренние отступы */
+    background-color: #007bff; /* Цвет фона */
+    color: white; /* Цвет текста */
+    border: none; /* Убираем границу */
+    border-radius: 5px; /* Закругленные углы */
+    font-size: 16px; /* Размер шрифта */
+    cursor: pointer; /* Указатель мыши при наведении */
+    text-align: center; /* Выравнивание текста по центру */
+    margin-top: 20px; /* Отступ сверху */
+}
+
+.rent-button:hover {
+    background-color: #0056b3; /* Цвет при наведении */
+}
+
+/* Стили для иконки удаления профиля */
+.delete-profile-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Круглая форма */
+    background-color: #ffffff; /* Фон иконки */
+    cursor: pointer; /* Указатель курсора */
+    transition: background-color 0.3s ease; /* Плавные переходы */
+    position: fixed; /* Фиксированное положение относительно окна браузера */
+    top: 20px; /* Отступ сверху */
+    left: 20px; /* Отступ слева */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тень для объема */
+}
+
+.delete-profile-icon:hover {
+    background-color: rgba(255, 77, 77, 0.1); /* Легкий фон при наведении */
+}
+
+.delete-profile-icon svg {
+    width: 24px; /* Размер иконки */
+    height: 24px; /* Размер иконки */
+    fill: #FF4D4D; /* Цвет иконки (красный) */
+}
+
+/* Стили для раздела заказов */
+.user-orders {
+    margin-top: 20px;
+}
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.order-item {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.order-item h3 {
+    margin: 0;
+}
+
+.order-item p {
+    margin: 5px 0;
+}
+
+/* Стили для формы отзыва */
+.review-form {
+    margin-top: 20px;
+}
+
+.review-form textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: none;
+}
+
+/* Стили для списка отзывов */
+.reviews-list {
+    margin-top: 20px;
+}
+
+.review-item {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
+.review-item p:first-child {
+    font-weight: bold;
+    margin: 0;
+}
+
+.review-item p:last-child {
+    margin: 5px 0 0;
 }
 

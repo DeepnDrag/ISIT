@@ -7,13 +7,17 @@
     <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
-<header class="header">
-    <div class="profile-icon" onclick="window.location.href='/'" aria-label="Вернуться на главную">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#000000">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-        </svg>
-    </div>
-</header>
+<div class="profile-icon" onclick="window.location.href='/'" aria-label="Вернуться на главную">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#333333">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+    </svg>
+</div>
+
+<div class="profile-icon delete-profile-icon" id="deleteProfileIcon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#FF4D4D">
+        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+    </svg>
+</div>
 
 <main class="profile-page">
     <section class="profile-actions">
@@ -34,11 +38,19 @@
             <li><strong>Дата обновления:</strong> <span id="updatedAt">Загрузка...</span></li>
         </ul>
     </section>
+
+    <!-- Новый раздел для заказов -->
+    <section class="user-orders" id="userOrdersSection">
+        <h2>Мои заказы</h2>
+        <div id="ordersList" class="orders-list">
+            <!-- Заказы будут динамически добавлены сюда -->
+        </div>
+    </section>
 </main>
 
 <div id="errorMessage" class="error-message" style="display: none;">Ошибка загрузки данных профиля</div>
 
-<div id="editModal" class="modal">
+<div id="editProfileModal" class="modal">
     <div class="modal-content">
         <span class="close" id="closeModal">&times;</span>
         <h2>Редактировать профиль</h2>
@@ -130,6 +142,21 @@
 
             <!-- Кнопка сохранения -->
             <button type="button" id="saveCar" class="action-button">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+<!-- Модальное окно для удаления машины -->
+<div id="deleteCarModal" class="modal">
+    <div class="modal-content">
+        <span id="closeDeleteCarModal" class="close" aria-label="Закрыть">&times;</span>
+        <h2>Удалить машину</h2>
+        <form id="deleteCarForm">
+            <div class="form-group">
+                <label for="carIdToDelete">ID машины:</label>
+                <input type="number" id="carIdToDelete" required placeholder="Введите ID машины">
+            </div>
+            <button type="button" class="action-button" id="confirmDeleteCar">Удалить</button>
         </form>
     </div>
 </div>

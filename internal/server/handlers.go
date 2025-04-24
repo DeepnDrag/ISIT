@@ -26,7 +26,7 @@ func (s *Server) RegisterHandlers(m *Middleware) {
 	// Pages
 	apiGroup.GET("/profile/page", s.handleProfilePage)
 	apiGroup.GET("/search/page", s.handleSearchPage)
-	apiGroup.GET("/car/page", s.handleCarPage)
+	apiGroup.GET("/car/page/:id", s.handleCarPage)
 	authGroup.GET("/login/page", s.handleAuthPage)
 
 	// Users
@@ -40,8 +40,8 @@ func (s *Server) RegisterHandlers(m *Middleware) {
 	apiGroup.POST("/cars/add", s.CreateCar, m.AccessLog())        // Создать автомобиль
 	apiGroup.GET("/cars/brands", s.ListCarsBrands, m.AccessLog()) // Список всех марок
 	apiGroup.GET("/cars/models", s.ListCarsModels, m.AccessLog()) // Список всех моделей определенной марки
-	//apiGroup.DELETE("/cars/:id", s.DeleteCar)                     // Удалить автомобиль
-	apiGroup.GET("/cars/filter", s.FilterCars, m.AccessLog()) // Фильтрация автомобилей
+	apiGroup.DELETE("/cars/:id", s.DeleteCar)                     // Удалить автомобиль
+	apiGroup.GET("/cars/filter", s.FilterCars, m.AccessLog())     // Фильтрация автомобилей
 
 	// Locations
 	//apiGroup.POST("/locations", s.CreateLocation)       // Создать локацию
@@ -58,9 +58,9 @@ func (s *Server) RegisterHandlers(m *Middleware) {
 	//apiGroup.DELETE("/orders/:id", s.DeleteOrder) // Удалить заказ
 
 	// Reviews
-	apiGroup.POST("/reviews", s.CreateReview, m.AccessLog())           // Создать отзыв
-	apiGroup.GET("/reviews:car_id", s.ListReviewsByCar, m.AccessLog()) // Список всех отзывов на машину
-	apiGroup.DELETE("/reviews/:id", s.DeleteReview, m.AccessLog())     // Удалить отзыв
+	apiGroup.POST("/reviews", s.CreateReview, m.AccessLog())       // Создать отзыв
+	apiGroup.GET("/reviews/:car_id", s.ListReviewsByCar)           // Список всех отзывов на машину
+	apiGroup.DELETE("/reviews/:id", s.DeleteReview, m.AccessLog()) // Удалить отзыв
 
 	apiGroup.Use(m.AccessLog()) // Применяем middleware для проверки JWT
 
@@ -115,7 +115,7 @@ func (s *Server) Authorize(c echo.Context) error {
 		}
 	}
 
-	token, err := utils.GenerateToken(user.Email, s.JWT.SecretKey)
+	token, err := utils.GenerateToken(user.ID, user.Email, s.JWT.SecretKey)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to generate token"})
 	}
@@ -474,10 +474,10 @@ func (s *Server) CreateOrder(c echo.Context) error {
 	var order models.Order
 
 	if err := c.Bind(&order); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request"})
+		return c.JSON(http.StatusBadRequest, map[string]error{"error": err})
 	}
 
-	userID, ok := c.Get("UserID").(uint)
+	userID, ok := c.Get("userID").(uint)
 	if !ok {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "user not authenticated"})
 	}
@@ -506,7 +506,7 @@ func (s *Server) CreateOrder(c echo.Context) error {
 
 // GetOrder получает заказ по пользователю
 func (s *Server) GetOrdersForUser(c echo.Context) error {
-	userID, ok := c.Get("UserID").(uint)
+	userID, ok := c.Get("userID").(uint)
 	if !ok {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "user not authenticated"})
 	}
@@ -515,6 +515,7 @@ func (s *Server) GetOrdersForUser(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to fetch orders"})
 	}
+	log.Println("заказыыыыыыыыыыыыыыыы", orders)
 
 	if len(orders) == 0 {
 		return c.JSON(http.StatusOK, []models.Order{})
@@ -568,10 +569,10 @@ func (s *Server) CreateReview(c echo.Context) error {
 	var review models.Review
 
 	if err := c.Bind(&review); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request"})
+		return c.JSON(http.StatusBadRequest, map[string]error{"error": err})
 	}
 
-	userID, ok := c.Get("UserID").(uint)
+	userID, ok := c.Get("userID").(uint)
 	if !ok {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "user not authenticated"})
 	}
@@ -606,7 +607,7 @@ func (s *Server) ListReviewsByCar(c echo.Context) error {
 	if carIDStr == "" {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "missing car_id parameter"})
 	}
-
+	slog.Info("carIDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD", carIDStr)
 	carID, err := strconv.ParseUint(carIDStr, 10, 32)
 	if err != nil || carID == 0 {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid car_id"})

@@ -69,7 +69,7 @@ type Review struct {
 	CarID     uint   `gorm:"not null" json:"car_id"`
 	Rating    int    `gorm:"not null" json:"rating"` // Оценка (например, от 1 до 5)
 	Comment   string `gorm:"not null" json:"comment"`
-	CreatedAt string `gorm:"not null"`
+	CreatedAt string `gorm:"not null" json:"created_at"`
 	UpdatedAt string `gorm:"not null"`
 }
 
@@ -87,4 +87,18 @@ type SearchCarRequest struct {
 	MaxPrice  float64 `json:"max_price" query:"max_price"`   // Максимальная цена за день
 	StartDate string  `json:"start_date" query:"start_date"` // Дата начала аренды (в формате YYYY-MM-DD)
 	EndDate   string  `json:"end_date" query:"end_date"`     // Дата окончания аренды (в формате YYYY-MM-DD)
+}
+
+type OrderWithCarRequest struct {
+	ID        uint    `json:"id"`
+	UserID    uint    `json:"-"`
+	CarID     uint    `json:"car_id"`
+	CarBrand  string  `json:"car_brand"`  // Марка автомобиля
+	CarModel  string  `json:"car_model"`  // Модель автомобиля
+	StartDate string  `json:"start_date"` // Дата начала аренды
+	EndDate   string  `json:"end_date"`   // Дата окончания аренды
+	TotalCost float64 `json:"total_cost"` // Общая стоимость аренды
+	Status    string  `json:"status"`     // Статус заказа
+	CreatedAt string  `json:"created_at"`
+	UpdatedAt string  `json:"updated_at"`
 }

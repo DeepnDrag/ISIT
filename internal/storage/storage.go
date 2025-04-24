@@ -44,7 +44,7 @@ type CarsRepository interface {
 // OrdersRepository определяет методы для работы с заказами.
 type OrdersRepository interface {
 	Create(order *models.Order) (uint, error)
-	GetByUserID(userID uint) ([]models.Order, error)
+	GetByUserID(userID uint) ([]models.OrderWithCarRequest, error)
 	GetAll() ([]models.Order, error)
 	Update(order *models.Order) error
 	Delete(id uint) error

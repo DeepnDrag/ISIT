@@ -7,17 +7,76 @@
     <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
+<!-- Иконка профиля -->
+<div class="profile-icon" id="profileIcon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#000000">
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+    </svg>
+</div>
+
+<!-- Контейнер для отображения данных о машине -->
 <div id="app">
-    <h1 id="car-title">Загрузка...</h1>
-    <img id="car-image" src="" alt="Car Image" style="display: none;">
-    <div id="car-info">
-        <p><strong>Год выпуска:</strong> <span id="car-year"></span></p>
-        <p><strong>Цвет:</strong> <span id="car-color"></span></p>
-        <p><strong>Пробег:</strong> <span id="car-mileage"></span> км</p>
-        <p><strong>Цена за день:</strong> <span id="car-price"></span> ₽</p>
-        <p><strong>Статус:</strong> <span id="car-status"></span></p>
+    <div id="carDetails">
+        <!-- Здесь будут динамически отображаться данные о машине -->
+    </div>
+    <!-- Кнопка "Оформить заказ" -->
+    <button id="rentButton" class="rent-button">Оформить заказ</button>
+</div>
+
+<!-- Модальное окно -->
+<div id="rentModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Оформление заказа</h2>
+
+        <!-- Форма для выбора дат -->
+        <form id="rentForm">
+            <label for="startDate">Дата начала аренды:</label>
+            <input type="date" id="startDate" name="startDate" required>
+
+            <label for="endDate">Дата окончания аренды:</label>
+            <input type="date" id="endDate" name="endDate" required>
+
+            <!-- Итоговая стоимость -->
+            <p><strong>Итоговая стоимость:</strong> <span id="totalCost">0 ₽</span></p>
+
+            <!-- Кнопка подтверждения -->
+            <button type="submit" id="confirmRent" class="confirm-rent-button">Подтвердить заказ</button>
+        </form>
     </div>
 </div>
+
+<!-- Отзывы -->
+<div id="reviewsSection">
+    <h3>Отзывы</h3>
+
+    <!-- Форма для добавления отзыва -->
+    <form id="addReviewForm" class="review-form">
+        <h4>Написать отзыв</h4>
+
+        <!-- Поле для Rating -->
+        <div class="form-group">
+            <label for="rating">Рейтинг (1-5):</label>
+            <input type="number" id="rating" name="rating" min="1" max="5" required placeholder="Введите рейтинг" />
+        </div>
+
+        <!-- Поле для Comment -->
+        <div class="form-group">
+            <label for="comment">Комментарий:</label>
+            <textarea id="comment" name="comment" required placeholder="Введите ваш комментарий"></textarea>
+        </div>
+
+        <!-- Кнопка отправки отзыва -->
+        <button type="submit" id="submitReview" class="action-button">Отправить отзыв</button>
+    </form>
+
+    <!-- Список отзывов -->
+    <div id="reviewsList" class="reviews-list">
+        <!-- Отзывы будут динамически добавлены сюда -->
+    </div>
+</div>
+
+<!-- Скрипт для загрузки и отображения данных -->
 <script src="/static/scripts/car.js"></script>
 </body>
 </html>

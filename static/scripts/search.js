@@ -130,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const startDate = startDateInput.value;
             const endDate = endDateInput.value;
 
-            let url = '/api/cars/filter';
             const params = new URLSearchParams();
             if (brand) params.append('brand', brand);
             if (model) params.append('model', model);
@@ -141,11 +140,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (startDate) params.append('start_date', startDate);
             if (endDate) params.append('end_date', endDate);
 
-            if (params.toString()) {
-                url += '?' + params.toString();
+
+            const token = localStorage.getItem('jwtToken'); // Получаем токен из localStorage
+            if (!token) {
+                alert('Вы не авторизованы!');
+                window.location.href = '/login'; // Перенаправляем на страницу логина
+                return;
             }
 
-            const response = await fetch(url);
+            const response = await fetch(`/api/cars/filter`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
             if (!response.ok) throw new Error('Ошибка при получении данных');
             const cars = await response.json();
             renderCars(cars);
@@ -155,19 +165,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // function goToPresentationCarPage(id) {
-    //     const token = localStorage.getItem("jwtToken");
-    //     console.log('lololol')
-    //     // Проверяем, авторизован ли пользователь
-    //     if (!token) {
-    //         alert("Вы не авторизованы!");
-    //         window.location.href = "/login"; // Если не авторизованы, переходим на страницу логина
-    //         return;
-    //     }
-    //
-    //     // Перенаправляем пользователя на страницу поиска машин
-    //     window.location.href = "/api/car/page/{id}";
-    // }
+    async function goToPresentationCarPage(id) {
+        const token = localStorage.getItem("jwtToken");
+        console.log('lololol')
+        // Проверяем, авторизован ли пользователь
+        if (!token) {
+            alert("Вы не авторизованы!");
+            window.location.href = "/login"; // Если не авторизованы, переходим на страницу логина
+            return;
+        }
+
+        // const response = await fetch(`/api/car/page/${id}`, {
+        //     method: 'GET',
+        //     headers: {
+        //         'Authorization': `Bearer ${token}`,
+        //         'Content-Type': 'application/json'
+        //     }
+        // });
+
+        // if (!response.ok) throw new Error('Ошибка при получении данных');
+        // const cars = await response.json();
+
+        // Перенаправляем пользователя на страницу поиска машин
+        window.location.href = `/api/car/page/${id}`;
+    }
 
     function renderCars(cars) {
         carList.innerHTML = '';
@@ -190,14 +211,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong>Пробег:</strong> ${car.mileage} км</p>
                 <p><strong>Цена за день:</strong> ${car.price_per_day}₽</p>
                 <p><strong>Статус:</strong> ${car.status}</p>
+                <button class="action-button-car-presentation">перейти</button>
             </div>
         `;
+            const button = carItem.querySelector('.action-button-car-presentation');
+            button.addEventListener('click', () => {
+                goToPresentationCarPage(car.id);
+            });
             carList.appendChild(carItem);
+
         });
-        // const button = carItem.querySelector('.action-button-test');
-        // button.addEventListener('click', () => {
-        //     goToPresentationCarPage(car.id);
-        // });
     }
 
     // Инициализация
@@ -217,4 +240,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const searchButton = document.getElementById('searchButton');
     searchButton.addEventListener('click', fetchCars);
+
+    // Добавляем обработчик для кнопки профиля
+    const profileIcon = document.getElementById('profileIcon');
+    profileIcon.addEventListener('click', async () => {
+        try {
+            // Если запрос успешен, перенаправляем пользователя на страницу профиля
+            window.location.href = '/api/profile/page';
+        } catch (error) {
+            alert("Ошибка при получении страницы профиля");
+            console.error("Ошибка:", error);
+        }
+    });
 });

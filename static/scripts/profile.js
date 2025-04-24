@@ -1,17 +1,56 @@
 document.addEventListener("DOMContentLoaded", function () {
     loadUserProfile();
-
+    loadUserOrders();
     // Обработчики для модальных окон
     document.getElementById("editProfile").addEventListener("click", openEditModal);
     document.getElementById("saveProfile").addEventListener("click", updateProfile);
     document.getElementById("closeModal").addEventListener("click", closeEditModal);
-
     document.getElementById("closeCarModal").addEventListener("click", closeAddCarModal);
     document.getElementById("saveCar").addEventListener("click", addCar);
-
+    document.getElementById("closeDeleteCarModal").addEventListener("click", closeDeleteCarModal); // Добавлено
     // Обработчик для перехода на страницу поиска машин с GET-запросом
     document.getElementById("goToSearch").addEventListener("click", goToSearchPage);
+    // Обработчик для удаления профиля через иконку
+    document.getElementById("deleteProfileIcon").addEventListener("click", confirmDeleteProfile);
 });
+
+// Функция подтверждения удаления профиля
+function confirmDeleteProfile() {
+    const isConfirmed = confirm("Вы уверены, что хотите удалить свой профиль? Это действие нельзя отменить.");
+    if (!isConfirmed) return;
+
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+        alert("Вы не авторизованы!");
+        window.location.href = "/login";
+        return;
+    }
+
+    try {
+        fetch("/api/profile", {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (!response.ok) throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
+                return response.json();
+            })
+            .then(() => {
+                alert("Профиль успешно удален.");
+                localStorage.removeItem("jwtToken");
+                window.location.href = "/login";
+            })
+            .catch(error => {
+                alert("Ошибка при удалении профиля");
+                console.error("Ошибка:", error);
+            });
+    } catch (error) {
+        alert("Ошибка при удалении профиля");
+        console.error("Ошибка:", error);
+    }
+}
 
 // Функция для перехода на страницу поиска машин
 function goToSearchPage() {
@@ -57,8 +96,12 @@ async function loadUserProfile() {
 
         if (user.role === "admin") {
             const adminActions = document.getElementById("adminActions");
-            adminActions.innerHTML = `<button class="action-button" id="addCar">Добавить машину</button>`;
+            adminActions.innerHTML = `
+                <button class="action-button" id="addCar">Добавить машину</button>
+                <button class="action-button" id="deleteCar">Удалить машину</button>
+            `;
             document.getElementById("addCar").addEventListener("click", openAddCarModal);
+            document.getElementById("deleteCar").addEventListener("click", openDeleteCarModal);
         }
 
         document.getElementById("editFirstName").value = user.first_name || "";
@@ -72,10 +115,12 @@ async function loadUserProfile() {
 }
 
 // Функции открытия/закрытия модальных окон
-function openEditModal() { document.getElementById("editModal").style.display = "block"; }
-function closeEditModal() { document.getElementById("editModal").style.display = "none"; }
+function openEditModal() { document.getElementById("editProfileModal").style.display = "block"; }
+function closeEditModal() { document.getElementById("editProfileModal").style.display = "none"; }
 function openAddCarModal() { document.getElementById("addCarModal").style.display = "block"; }
 function closeAddCarModal() { document.getElementById("addCarModal").style.display = "none"; }
+function openDeleteCarModal() { document.getElementById("deleteCarModal").style.display = "block"; }
+function closeDeleteCarModal() { document.getElementById("deleteCarModal").style.display = "none"; }
 
 // Функция обновления профиля
 async function updateProfile() {
@@ -109,6 +154,7 @@ async function updateProfile() {
     }
 }
 
+// Функция добавления машины
 async function addCar() {
     const carData = new FormData();
 
@@ -156,3 +202,96 @@ async function addCar() {
         console.error("Ошибка:", error);
     }
 }
+
+// Функция удаления машины
+async function deleteCar() {
+    const carId = document.getElementById("carIdToDelete").value.trim();
+    const token = localStorage.getItem("jwtToken");
+
+    if (!token) {
+        alert("Вы не авторизованы!");
+        window.location.href = "/login";
+        return;
+    }
+
+    if (!carId || isNaN(carId)) {
+        alert("Пожалуйста, введите корректный ID машины.");
+        return;
+    }
+
+    const isConfirmed = confirm(`Вы уверены, что хотите удалить машину с ID ${carId}? Это действие нельзя отменить.`);
+    if (!isConfirmed) return;
+
+    try {
+        const response = await fetch(`/api/cars/${carId}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) throw new Error(`Ошибка ${response.status}: ${await response.text()}`);
+
+        alert("Машина успешно удалена!");
+        closeDeleteCarModal();
+
+    } catch (error) {
+        alert("Ошибка при удалении машины");
+        console.error("Ошибка:", error);
+    }
+}
+
+async function loadUserOrders() {
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+        alert("Вы не авторизованы!");
+        window.location.href = "/login";
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/orders/user", {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) throw new Error(`Ошибка ${response.status}: ${await response.text()}`);
+
+        const orders = await response.json();
+
+        // Очищаем предыдущие заказы
+        const ordersList = document.getElementById("ordersList");
+        ordersList.innerHTML = "";
+
+        // Если заказов нет, показываем сообщение
+        if (orders.length === 0) {
+            ordersList.innerHTML = "<p>У вас пока нет заказов.</p>";
+            return;
+        }
+
+        // Отображаем каждый заказ
+        orders.forEach(order => {
+            const orderDiv = document.createElement("div");
+            orderDiv.className = "order-item";
+
+            orderDiv.innerHTML = `
+                <h3>Заказ №${order.id}</h3>
+                <p><strong>Машина:</strong> ${order.car_brand} ${order.car_model}</p>
+                <p><strong>Дата аренды:</strong> ${order.start_date}</p>
+                <p><strong>Дата возврата:</strong> ${order.end_date}</p>
+                <p><strong>Стоимость:</strong> ${order.total_cost} ₽</p>
+                <p><strong>Статус:</strong> ${order.status}</p>
+            `;
+
+            ordersList.appendChild(orderDiv);
+        });
+    } catch (error) {
+        console.error("Ошибка при загрузке заказов:", error);
+        alert("Не удалось загрузить заказы. Попробуйте позже.");
+    }
+}
+
+// Привязываем обработчик к кнопке "Удалить" в модальном окне
+document.getElementById("confirmDeleteCar").addEventListener("click", deleteCar);
+

@@ -56,9 +56,13 @@ func (r *ReviewsRepo) FilterByUserID(userID uint) ([]models.Review, error) {
 // FilterByCarID фильтрует отзывы по ID автомобиля.
 func (r *ReviewsRepo) FilterByCarID(carID uint) ([]models.Review, error) {
 	var reviews []models.Review
-	if err := r.db.Where("car_id = ?", carID).Preload("User").Preload("Car").Find(&reviews).Error; err != nil {
-		return nil, err
+
+	// Выполняем запрос к базе данных
+	result := r.db.Where("car_id = ?", carID).Find(&reviews)
+	if result.Error != nil {
+		return nil, result.Error // Возвращаем ошибку, если запрос завершился неудачно
 	}
+
 	return reviews, nil
 }
 
