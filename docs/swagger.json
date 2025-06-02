@@ -4,20 +4,68 @@
         "contact": {}
     },
     "paths": {
-        "/baggage": {
-            "get": {
-                "description": "Получает список всех багажных мест",
-                "tags": [
-                    "baggage"
+        "/auth/login": {
+            "post": {
+                "description": "Авторизация пользователя",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["auth"],
+                "summary": "Вход пользователя",
+                "parameters": [
+                    {
+                        "name": "credentials",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AuthorizeUserRequest"
+                        }
+                    }
                 ],
-                "summary": "Список багажа",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Baggage"
+                            "type": "object",
+                            "properties": {
+                                "token": { "type": "string" }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/get": {
+            "get": {
+                "description": "Получает информацию о пользователе по токену",
+                "tags": ["users"],
+                "summary": "Информация о пользователе",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "email": { "type": "string" },
+                                "phone_number": { "type": "string" },
+                                "role": { "type": "string" },
+                                "created_at": { "type": "string" },
+                                "updated_at": { "type": "string" },
+                                "first_name": { "type": "string" },
+                                "last_name": { "type": "string" }
                             }
                         }
                     },
@@ -25,33 +73,326 @@
                         "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "additionalProperties": { "type": "string" }
                         }
                     }
                 }
-            },
+            }
+        },
+        "/api/user/update": {
             "post": {
-                "description": "Создает новый багаж",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "baggage"
-                ],
-                "summary": "Создать багаж",
+                "description": "Обновляет информацию о пользователе",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["users"],
+                "summary": "Обновить пользователя",
                 "parameters": [
                     {
-                        "description": "Данные багажа",
-                        "name": "baggage",
+                        "name": "user",
+                        "in": "body",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "delete": {
+                "description": "Удаляет пользователя",
+                "tags": ["users"],
+                "summary": "Удалить пользователя",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cars/{id}": {
+            "get": {
+                "description": "Возвращает данные автомобиля по ID",
+                "tags": ["cars"],
+                "summary": "Детали автомобиля",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Car"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cars/add": {
+            "post": {
+                "description": "Создаёт новый автомобиль",
+                "tags": ["cars"],
+                "summary": "Добавить автомобиль",
+                "consumes": ["multipart/form-data"],
+                "produces": ["application/json"],
+                "parameters": [
+                    {
+                        "name": "brand",
+                        "in": "formData",
+                        "type": "string"
+                    },
+                    {
+                        "name": "model",
+                        "in": "formData",
+                        "type": "string"
+                    },
+                    {
+                        "name": "year",
+                        "in": "formData",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "color",
+                        "in": "formData",
+                        "type": "string"
+                    },
+                    {
+                        "name": "mileage",
+                        "in": "formData",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "price_per_day",
+                        "in": "formData",
+                        "type": "number"
+                    },
+                    {
+                        "name": "status",
+                        "in": "formData",
+                        "type": "string"
+                    },
+                    {
+                        "name": "location_id",
+                        "in": "formData",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "image",
+                        "in": "formData",
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "id": { "type": "integer" },
+                                "message": { "type": "string" },
+                                "car": { "$ref": "#/definitions/models.Car" }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cars/brands": {
+            "get": {
+                "description": "Возвращает список всех марок автомобилей",
+                "tags": ["cars"],
+                "summary": "Список марок",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cars/models": {
+            "get": {
+                "description": "Возвращает список моделей для указанной марки",
+                "tags": ["cars"],
+                "summary": "Модели по марке",
+                "parameters": [
+                    {
+                        "name": "brand",
+                        "in": "query",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "models": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cars/filter": {
+            "post": {
+                "description": "Фильтрует автомобили по заданным критериям",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["cars"],
+                "summary": "Фильтр автомобилей",
+                "parameters": [
+                    {
+                        "name": "filter",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Baggage"
+                            "$ref": "#/definitions/models.SearchCarRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Car"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                        }
+                    }
+                }
+            }
+        },
+        "/cars/{id}": {
+            "delete": {
+                "description": "Удаляет автомобиль по ID",
+                "tags": ["cars"],
+                "summary": "Удалить автомобиль",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                        }
+                    }
+                }
+            }
+        },
+        "/orders": {
+            "post": {
+                "description": "Создаёт новый заказ",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["orders"],
+                "summary": "Создать заказ",
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Order"
                         }
                     }
                 ],
@@ -60,17 +401,10 @@
                         "description": "Created",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": {
-                                "type": "integer"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
+                            "properties": {
+                                "id": { "type": "integer" },
+                                "message": { "type": "string" },
+                                "order": { "$ref": "#/definitions/models.Order" }
                             }
                         }
                     },
@@ -78,180 +412,24 @@
                         "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "additionalProperties": { "type": "string" }
                         }
                     }
                 }
             }
         },
-        "/baggage/{id}": {
+        "/orders/user": {
             "get": {
-                "description": "Возвращает данные о багаже по его ID",
-                "tags": [
-                    "baggage"
-                ],
-                "summary": "Получить багаж",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID багажа",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Baggage"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Обновляет информацию о багаже по его ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "baggage"
-                ],
-                "summary": "Обновить багаж",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID багажа",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Обновленные данные багажа",
-                        "name": "baggage",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Baggage"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Baggage"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Удаляет багаж по его ID",
-                "tags": [
-                    "baggage"
-                ],
-                "summary": "Удалить багаж",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID багажа",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/flights": {
-            "get": {
-                "description": "Возвращает список всех доступных рейсов",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "flights"
-                ],
-                "summary": "Получить список рейсов",
+                "description": "Получает список заказов текущего пользователя",
+                "tags": ["orders"],
+                "summary": "Заказы пользователя",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Flight"
+                                "$ref": "#/definitions/models.Order"
                             }
                         }
                     },
@@ -259,33 +437,26 @@
                         "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "additionalProperties": { "type": "string" }
                         }
                     }
                 }
-            },
+            }
+        },
+        "/reviews": {
             "post": {
-                "description": "Добавляет новый рейс в систему",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "flights"
-                ],
-                "summary": "Создать рейс",
+                "description": "Создаёт новый отзыв",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["reviews"],
+                "summary": "Создать отзыв",
                 "parameters": [
                     {
-                        "description": "Данные рейса",
-                        "name": "flight",
+                        "name": "review",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Flight"
+                            "$ref": "#/definitions/models.Review"
                         }
                     }
                 ],
@@ -294,15 +465,10 @@
                         "description": "Created",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
+                            "properties": {
+                                "id": { "type": "integer" },
+                                "message": { "type": "string" },
+                                "review": { "$ref": "#/definitions/models.Review" }
                             }
                         }
                     },
@@ -310,183 +476,32 @@
                         "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "additionalProperties": { "type": "string" }
                         }
                     }
                 }
             }
         },
-        "/flights/{id}": {
+        "/reviews/{car_id}": {
             "get": {
-                "description": "Получает данные о рейсе по указанному ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "flights"
-                ],
-                "summary": "Получить рейс",
+                "description": "Возвращает список отзывов для автомобиля",
+                "tags": ["reviews"],
+                "summary": "Отзывы по автомобилю",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "ID рейса",
-                        "name": "id",
+                        "name": "car_id",
                         "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Flight"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Обновляет данные о рейсе по указанному ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "flights"
-                ],
-                "summary": "Обновить рейс",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID рейса",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Обновленные данные рейса",
-                        "name": "flight",
-                        "in": "body",
                         "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Flight"
-                        }
+                        "type": "integer"
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Flight"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Удаляет рейс по указанному ID",
-                "tags": [
-                    "flights"
-                ],
-                "summary": "Удалить рейс",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID рейса",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/passengers": {
-            "get": {
-                "description": "Возвращает всех зарегистрированных пассажиров",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "passengers"
-                ],
-                "summary": "Получить список пассажиров",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Passenger"
+                                "$ref": "#/definitions/models.Review"
                             }
                         }
                     },
@@ -494,449 +509,34 @@
                         "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Добавляет нового пассажира в систему",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "passengers"
-                ],
-                "summary": "Создать пассажира",
-                "parameters": [
-                    {
-                        "description": "Данные пассажира",
-                        "name": "passenger",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Passenger"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "additionalProperties": { "type": "string" }
                         }
                     }
                 }
             }
         },
-        "/passengers/{id}": {
-            "get": {
-                "description": "Возвращает информацию о пассажире по его ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "passengers"
-                ],
-                "summary": "Получить пассажира",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пассажира",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Passenger"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Обновляет информацию о пассажире по ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "passengers"
-                ],
-                "summary": "Обновить пассажира",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID пассажира",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Обновленные данные пассажира",
-                        "name": "passenger",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Passenger"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Passenger"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
+        "/reviews/{id}": {
             "delete": {
-                "description": "Удаляет пассажира по ID",
-                "tags": [
-                    "passengers"
-                ],
-                "summary": "Удалить пассажира",
+                "description": "Удаляет отзыв по ID",
+                "tags": ["reviews"],
+                "summary": "Удалить отзыв",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "ID пассажира",
                         "name": "id",
                         "in": "path",
-                        "required": true
+                        "required": true,
+                        "type": "integer"
                     }
                 ],
                 "responses": {
                     "204": {
                         "description": "No Content"
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tickets": {
-            "get": {
-                "description": "Возвращает список всех доступных билетов",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "tickets"
-                ],
-                "summary": "Получить список билетов",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Ticket"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Добавляет новый билет в систему",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "tickets"
-                ],
-                "summary": "Создать билет",
-                "parameters": [
-                    {
-                        "description": "Данные билета",
-                        "name": "ticket",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Ticket"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "integer"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tickets/{id}": {
-            "get": {
-                "description": "Получает данные о билете по указанному ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "tickets"
-                ],
-                "summary": "Получить билет",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID билета",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Ticket"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Обновляет данные о билете по указанному ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "tickets"
-                ],
-                "summary": "Обновить билет",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID билета",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Обновленные данные билета",
-                        "name": "ticket",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Ticket"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Ticket"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Удаляет билет по указанному ID",
-                "tags": [
-                    "tickets"
-                ],
-                "summary": "Удалить билет",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID билета",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "additionalProperties": { "type": "string" }
                         }
                     }
                 }
@@ -944,90 +544,80 @@
         }
     },
     "definitions": {
-        "models.Baggage": {
+        "models.AuthorizeUserRequest": {
             "type": "object",
             "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "ticketID": {
-                    "type": "integer"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "weight": {
-                    "type": "number"
-                }
+                "email": { "type": "string" },
+                "password": { "type": "string" }
             }
         },
-        "models.Flight": {
+        "models.User": {
             "type": "object",
             "properties": {
-                "airline": {
-                    "type": "string"
-                },
-                "arrivalAirport": {
-                    "type": "string"
-                },
-                "arrivalTime": {
-                    "type": "string"
-                },
-                "departureAirport": {
-                    "type": "string"
-                },
-                "departureTime": {
-                    "type": "string"
-                },
-                "flightNumber": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                }
+                "id": { "type": "integer" },
+                "email": { "type": "string" },
+                "first_name": { "type": "string" },
+                "last_name": { "type": "string" },
+                "phone_number": { "type": "string" },
+                "role": { "type": "string" },
+                "created_at": { "type": "string" },
+                "updated_at": { "type": "string" }
             }
         },
-        "models.Passenger": {
+        "models.Car": {
             "type": "object",
             "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "firstName": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "lastName": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                }
+                "id": { "type": "integer" },
+                "brand": { "type": "string" },
+                "model": { "type": "string" },
+                "year": { "type": "integer" },
+                "color": { "type": "string" },
+                "mileage": { "type": "integer" },
+                "price_per_day": { "type": "number" },
+                "status": { "type": "string" },
+                "location_id": { "type": "integer" },
+                "image_url": { "type": "string" },
+                "created_at": { "type": "string" },
+                "updated_at": { "type": "string" }
             }
         },
-        "models.Ticket": {
+        "models.SearchCarRequest": {
             "type": "object",
             "properties": {
-                "flightID": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "passengerID": {
-                    "type": "integer"
-                },
-                "price": {
-                    "type": "number"
-                },
-                "seatNumber": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
+                "brand": { "type": "string" },
+                "model": { "type": "string" },
+                "year_from": { "type": "integer" },
+                "year_to": { "type": "integer" },
+                "min_price": { "type": "number" },
+                "max_price": { "type": "number" },
+                "start_date": { "type": "string" },
+                "end_date": { "type": "string" }
+            }
+        },
+        "models.Order": {
+            "type": "object",
+            "properties": {
+                "id": { "type": "integer" },
+                "user_id": { "type": "integer" },
+                "car_id": { "type": "integer" },
+                "start_date": { "type": "string" },
+                "end_date": { "type": "string" },
+                "total_cost": { "type": "number" },
+                "status": { "type": "string" },
+                "created_at": { "type": "string" },
+                "updated_at": { "type": "string" }
+            }
+        },
+        "models.Review": {
+            "type": "object",
+            "properties": {
+                "id": { "type": "integer" },
+                "user_id": { "type": "integer" },
+                "car_id": { "type": "integer" },
+                "rating": { "type": "integer" },
+                "comment": { "type": "string" },
+                "created_at": { "type": "string" },
+                "updated_at": { "type": "string" }
             }
         }
     }

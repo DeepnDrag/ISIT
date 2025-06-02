@@ -33,7 +33,7 @@ func (s *Server) RegisterHandlers(m *Middleware) {
 	authGroup.POST("/login", s.Authorize)
 	apiGroup.GET("/user/get", s.GetUserInfoByEmail, m.AccessLog()) // Получить пользователя по token
 	apiGroup.POST("/user/update", s.UpdateUser, m.AccessLog())     // Обновить пользователя
-	apiGroup.DELETE("/users/:id", s.DeleteUser)                    // Удалить пользователя
+	apiGroup.DELETE("/users", s.DeleteUser)                        // Удалить пользователя
 
 	// Cars
 	apiGroup.GET("/cars/:id", s.GetCarDetails, m.AccessLog())     // Данные по автомобилю
@@ -43,19 +43,9 @@ func (s *Server) RegisterHandlers(m *Middleware) {
 	apiGroup.DELETE("/cars/:id", s.DeleteCar)                     // Удалить автомобиль
 	apiGroup.GET("/cars/filter", s.FilterCars, m.AccessLog())     // Фильтрация автомобилей
 
-	// Locations
-	//apiGroup.POST("/locations", s.CreateLocation)       // Создать локацию
-	//apiGroup.GET("/locations/:id", s.GetLocation)       // Получить локацию по ID
-	//apiGroup.GET("/locations", s.ListLocations)         // Список всех локаций
-	//apiGroup.PUT("/locations/:id", s.UpdateLocation)    // Обновить локацию
-	//apiGroup.DELETE("/locations/:id", s.DeleteLocation) // Удалить локацию
-
 	// Orders
 	apiGroup.POST("/orders", s.CreateOrder, m.AccessLog())          // Создать заказ
 	apiGroup.GET("/orders/user", s.GetOrdersForUser, m.AccessLog()) // Получить заказы пользователя
-	//apiGroup.GET("/orders", s.ListOrders)         // Список всех заказов
-	//apiGroup.PUT("/orders/:id", s.UpdateOrder)    // Обновить заказ
-	//apiGroup.DELETE("/orders/:id", s.DeleteOrder) // Удалить заказ
 
 	// Reviews
 	apiGroup.POST("/reviews", s.CreateReview, m.AccessLog())       // Создать отзыв
@@ -127,17 +117,14 @@ func (s *Server) GetCarDetails(c echo.Context) error {
 	carID := c.Param("id")
 	id, err := strconv.Atoi(carID)
 	if err != nil {
-		log.Println("aaaaaaaaaaa", err)
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid car ID"})
 	}
 
 	// Получаем автомобиль по ID
 	car, err := s.Storage.Cars.GetByID(uint(id))
 	if err != nil {
-		log.Println("bbbbbbb", err)
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "car not found"})
 	}
-	log.Println("carcarcarcarcaracr", car)
 	return c.JSON(http.StatusOK, car)
 }
 
@@ -150,7 +137,6 @@ func (s *Server) FilterCars(c echo.Context) error {
 	}
 
 	// Вызываем метод из storage для фильтрации
-	// Вызываем сервисный метод
 	cars, err := s.Storage.Cars.Filter(req)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to search cars"})
@@ -243,13 +229,19 @@ func (s *Server) UpdateUser(c echo.Context) error {
 
 // DeleteUser удаляет пользователя
 func (s *Server) DeleteUser(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid ID"})
+	// Извлекаем userID из контекста
+	userID, ok := c.Get("userID").(uint)
+	log.Println("УДАЛЕНИЕПРОФИЛЯПОЛЬЗОВАТЕЛЯ", ok)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "user ID not found in context"})
 	}
-	if err := s.Storage.Users.Delete(uint(id)); err != nil {
+
+	// Вызываем метод удаления пользователя
+	if err := s.Storage.Users.Delete(userID); err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to delete user"})
 	}
+
+	// Возвращаем успешный ответ
 	return c.JSON(http.StatusNoContent, nil)
 }
 
@@ -533,25 +525,6 @@ func (s *Server) ListOrders(c echo.Context) error {
 	return c.JSON(http.StatusOK, orders)
 }
 
-// UpdateOrder обновляет данные заказа
-//func (s *Server) UpdateOrder(c echo.Context) error {
-//	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid ID"})
-//	}
-//	order, err := s.Storage.Orders.GetByID(uint(id))
-//	if err != nil {
-//		return c.JSON(http.StatusNotFound, map[string]string{"error": "order not found"})
-//	}
-//	if err := c.Bind(order); err != nil {
-//		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request"})
-//	}
-//	if err := s.Storage.Orders.Update(order); err != nil {
-//		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to update order"})
-//	}
-//	return c.JSON(http.StatusOK, order)
-//}
-
 // DeleteOrder удаляет заказ
 func (s *Server) DeleteOrder(c echo.Context) error {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
@@ -623,25 +596,6 @@ func (s *Server) ListReviewsByCar(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, reviews)
 }
-
-//// UpdateReview обновляет данные отзыва
-//func (s *Server) UpdateReview(c echo.Context) error {
-//	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid ID"})
-//	}
-//	review, err := s.Storage.Reviews.GetByID(uint(id))
-//	if err != nil {
-//		return c.JSON(http.StatusNotFound, map[string]string{"error": "review not found"})
-//	}
-//	if err := c.Bind(review); err != nil {
-//		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request"})
-//	}
-//	if err := s.Storage.Reviews.Update(review); err != nil {
-//		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to update review"})
-//	}
-//	return c.JSON(http.StatusOK, review)
-//}
 
 // DeleteReview удаляет отзыв
 func (s *Server) DeleteReview(c echo.Context) error {

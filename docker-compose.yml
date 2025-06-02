@@ -9,7 +9,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./static:/app/static  # 📌 Добавляем монтирование папки static
+      - ./static:/app/static
     networks:
       - app_network
 

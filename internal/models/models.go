@@ -1,7 +1,6 @@
 package models
 
 // User представляет пользователя системы (клиента или администратора).
-// User представляет пользователя системы (клиента или администратора).
 type User struct {
 	ID           uint   `gorm:"primaryKey;autoIncrement" json:"id"`
 	Email        string `gorm:"unique;not null" json:"email"`

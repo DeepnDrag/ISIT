@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Rental Service</title>
+    <link rel="stylesheet" href="/static/spa/Spa.css">
+</head>
+<body>
+<header id="header" class="hidden">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo" onclick="navigateTo('/')">🚗 CarRental</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#" onclick="navigateTo('/')">Search Cars</a></li>
+                    <li><a href="#" onclick="navigateTo('/add-car')">Add Car</a></li>
+                    <li><a href="#" onclick="navigateTo('/profile')">Profile</a></li>
+                </ul>
+            </nav>
+            <div class="user-actions">
+                <span id="userEmail"></span>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+</header>
+<main class="container">
+    <!-- Login Page -->
+    <div id="login-page" class="page active">
+        <div class="login-container">
+            <h2 class="login-title">Welcome to CarRental</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-full">Login / Register</button>
+            </form>
+            <div id="loginAlert"></div>
+        </div>
+    </div>
+    <!-- Search Page -->
+    <div id="search-page" class="page">
+        <div class="search-section">
+            <h2>Find Your Perfect Car</h2>
+            <div class="search-filters">
+                <div class="form-group">
+                    <label for="searchBrand">Brand:</label>
+                    <select id="searchBrand">
+                        <option value="">All Brands</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="searchModel">Model:</label>
+                    <select id="searchModel">
+                        <option value="">All Models</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="searchYear">Year:</label>
+                    <input type="number" id="searchYear" placeholder="2020">
+                </div>
+                <div class="form-group">
+                    <label for="searchMaxPrice">Max Price per Day:</label>
+                    <input type="number" id="searchMaxPrice" placeholder="100">
+                </div>
+            </div>
+            <button class="btn" onclick="searchCars()">Search Cars</button>
+        </div>
+        <div id="carsContainer">
+            <div class="cars-grid" id="carsGrid">
+                <!-- Cars will be loaded here -->
+            </div>
+        </div>
+    </div>
+    <!-- Car Detail Page -->
+    <div id="car-detail-page" class="page">
+        <button class="btn btn-secondary" onclick="navigateTo('/')">← Back to Search</button>
+        <div id="carDetailContent">
+            <!-- Car details will be loaded here -->
+        </div>
+    </div>
+    <!-- Profile Page -->
+    <div id="profile-page" class="page">
+        <div class="profile-section">
+            <div class="profile-header">
+                <h2>My Profile</h2>
+                <button class="btn btn-danger" onclick="deleteAccount()">Delete Account</button>
+            </div>
+            <form id="profileForm" class="profile-form">
+                <div>
+                    <div class="form-group">
+                        <label for="firstName">First Name:</label>
+                        <input type="text" id="firstName" name="first_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" id="lastName" name="last_name">
+                    </div>
+                </div>
+                <div>
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number:</label>
+                        <input type="tel" id="phoneNumber" name="phone_number">
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Role:</label>
+                        <input type="text" id="role" name="role">
+                    </div>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <button type="submit" class="btn">Update Profile</button>
+                </div>
+            </form>
+        </div>
+        <div class="profile-section">
+            <h3>My Orders</h3>
+            <div id="ordersContainer">
+                <!-- Orders will be loaded here -->
+            </div>
+        </div>
+    </div>
+    <!-- Add Car Page -->
+    <div id="add-car-page" class="page">
+        <div class="add-car-form">
+            <h2>Add New Car</h2>
+            <form id="addCarForm" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="carBrand">Brand:</label>
+                        <input type="text" id="carBrand" name="brand" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="carModel">Model:</label>
+                        <input type="text" id="carModel" name="model" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="carYear">Year:</label>
+                        <input type="number" id="carYear" name="year" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="carColor">Color:</label>
+                        <input type="text" id="carColor" name="color" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="carMileage">Mileage:</label>
+                        <input type="number" id="carMileage" name="mileage" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="carPrice">Price per Day:</label>
+                        <input type="number" step="0.01" id="carPrice" name="price_per_day" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="carStatus">Status:</label>
+                        <select id="carStatus" name="status" required>
+                            <option value="available">Available</option>
+                            <option value="rented">Rented</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="carLocation">Location ID:</label>
+                        <input type="number" id="carLocation" name="location_id" required>
+                    </div>
+                </div>
+                <div class="file-input">
+                    <label for="carImage">Car Image:</label>
+                    <input type="file" id="carImage" name="image" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn">Add Car</button>
+            </form>
+        </div>
+    </div>
+</main>
+<script src="/static/spa/spa.js"></script>
+</body>
+</html>

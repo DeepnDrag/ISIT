@@ -31,16 +31,10 @@ func New(srvCfg config.Server, Jwt config.JWT, logger *slog.Logger, storage *sto
 	e.Logger.SetOutput(io.Discard)
 
 	// Middleware для всего приложения
+	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.Secure())
 	e.Use(middleware.CORS())
-
-	// Главная страница и статические файлы
-	e.GET("/", func(c echo.Context) error {
-		return c.File("static/index/base.html") // Главная страница
-	})
-	e.Static("/static", "static") // Раздача статических файлов
-
 	// Создаем middleware для проверки JWT
 	m := NewMiddleware(Jwt, logger)
 

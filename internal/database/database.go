@@ -57,13 +57,8 @@ func Connection(config config.DB) (*gorm.DB, error) {
 }
 
 func Migrations(db *gorm.DB) error {
-	// Удаление таблиц, если они уже существуют
-	//err := db.Migrator().DropTable(&models.User{}, &models.Car{}, &models.Order{}, &models.Location{}, &models.Review{})
-	//if err != nil {
-	//	return fmt.Errorf("ошибка при удалении таблиц: %w", err)
-	//}
 
-	// Создание таблиц заново
+	// Создание таблиц
 	err := db.AutoMigrate(&models.User{}, &models.Car{}, &models.Order{}, &models.Location{}, &models.Review{})
 	if err != nil {
 		return fmt.Errorf("ошибка при миграции: %w", err)
