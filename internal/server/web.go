@@ -35,6 +35,17 @@ func New(srvCfg config.Server, Jwt config.JWT, logger *slog.Logger, storage *sto
 	e.Use(middleware.Recover())
 	e.Use(middleware.Secure())
 	e.Use(middleware.CORS())
+
+	// Статические файлы
+	e.Static("/static", "static")
+
+	//// Обработчик для base.html (использовать для MPA версии)
+	//e.GET("/", func(c echo.Context) error {
+	//	// Проверяем существование файла
+	//	filePath := filepath.Join("static/index", "base.html")
+	//	return c.File(filePath)
+	//})
+
 	// Создаем middleware для проверки JWT
 	m := NewMiddleware(Jwt, logger)
 
@@ -46,6 +57,5 @@ func New(srvCfg config.Server, Jwt config.JWT, logger *slog.Logger, storage *sto
 
 func (s *Server) Serve() error {
 	s.logger.Info("HTTP server started", slog.String("url", s.URL))
-
 	return fmt.Errorf("server error: %w", s.app.Start(s.URL))
 }

@@ -235,7 +235,7 @@ function createCarCard(car) {
             <div class="car-details">
                 ${car.year} • ${car.color} • ${car.mileage.toLocaleString()} km
             </div>
-            <div class="car-price">$${car.price_per_day}/day</div>
+            <div class="car-price">${car.price_per_day}/day</div>
         </div>
     `;
     return card;
@@ -301,7 +301,7 @@ function displayCarDetail(car) {
                         </div>
                     </div>
                     <div style="font-size: 1.2rem; margin-bottom: 1rem;">
-                        <strong>Price: $${car.price_per_day}/day</strong>
+                        <strong>Price: ${car.price_per_day}/day</strong>
                     </div>
                     <button class="btn btn-full" onclick="bookCar(${car.id}, ${car.price_per_day})">Book Now</button>
                 </div>

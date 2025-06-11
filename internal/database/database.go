@@ -70,7 +70,7 @@ func Migrations(db *gorm.DB) error {
 	if result.Error != nil && errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		ph, _ := utils.HashPassword("admin123")
 		// Если админа нет, создаем его
-		adminUser := models.User{
+		adminUser1 := models.User{
 			FirstName:    "Admin",
 			LastName:     "User",
 			Email:        "admin",
@@ -79,9 +79,21 @@ func Migrations(db *gorm.DB) error {
 			CreatedAt:    time.Now().Format("2006-01-02 15:04:05"),
 			UpdatedAt:    time.Now().Format("2006-01-02 15:04:05"),
 		}
+		adminUser2 := models.User{
+			FirstName:    "admin@g.com",
+			LastName:     "User",
+			Email:        "admin@g.com",
+			PasswordHash: ph,
+			Role:         "admin",
+			CreatedAt:    time.Now().Format("2006-01-02 15:04:05"),
+			UpdatedAt:    time.Now().Format("2006-01-02 15:04:05"),
+		}
 
 		// Добавляем в базу
-		if err := db.Create(&adminUser).Error; err != nil {
+		if err := db.Create(&adminUser1).Error; err != nil {
+			return fmt.Errorf("ошибка при создании администратора: %w", err)
+		}
+		if err := db.Create(&adminUser2).Error; err != nil {
 			return fmt.Errorf("ошибка при создании администратора: %w", err)
 		}
 
